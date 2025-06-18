@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
+  "compilerOptions": {
+    "module": "esnext", // 또는 "module": "nodenext"
+    "target": "es6",
+    "moduleResolution": "node",
+    "esModuleInterop": true,              // ✅ 꼭 필요
+    "allowSyntheticDefaultImports": true  // ✅ 꼭 필요
+  }
+}
