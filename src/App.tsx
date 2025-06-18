@@ -9,9 +9,9 @@ function App() {
 
   return (
     <>
-      {/* <RotatingSphereBasic /> */}
+      <RotatingSphereBasic />
       {/* <WebGLTextParticle /> */}
-      <SphereParticleCanvas />
+      {/* <SphereParticleCanvas /> */}
       <div
         style={{
           width: "100%",

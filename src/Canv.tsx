@@ -17,7 +17,7 @@ void main() {
     void main() {
         vec2 c = gl_PointCoord - vec2(0.5);  // 중심에서 거리 계산
         if (length(c) > 0.5) discard;        // 반지름 0.5 초과면 버림
-        gl_FragColor = vec4(${randomRGB.r}, ${randomRGB.g}, ${randomRGB.b}, 1.0); // 흰색 원
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); // 흰색 원
         }
         `;
   const positionRef = useRef({
