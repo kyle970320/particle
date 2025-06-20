@@ -1,0 +1,8 @@
+.sub_container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  min-height: 100vh;
+  z-index: 50;
+  clip-path: none;
+}

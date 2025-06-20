@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createNoise3D } from "simplex-noise";
 
-export default function SphereParticleCanvas() {
+export default function SphereParticleCanvas({ mode }) {
   const randomRGB = { r: Math.random(), g: Math.random(), b: Math.random() };
   const vertexShaderSource = `
 attribute vec3 a_position;
@@ -29,7 +29,6 @@ void main() {
   });
   const onScroll = () => {
     const totalScroll = document.body.scrollHeight;
-    console.log(totalScroll);
     const getRatio = (ratio: number) => {
       const maxTotal = Math.min(totalScroll, 1200);
       const maxValue = Math.min((window.scrollY / maxTotal) * ratio, ratio);
@@ -44,11 +43,43 @@ void main() {
     };
   };
   useEffect(() => {
-    window.addEventListener("scroll", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
+    let start: number | null = null;
+    let animationFrameId: number;
+
+    const duration = 400; // 1초
+    const from = { ...positionRef.current };
+    const to =
+      mode > 0
+        ? { perX: 3, perZ: 4, rotateX: 0.8, rotateY: 1, rotateZ: 1.2 }
+        : { perX: 0, perZ: 0, rotateX: 0, rotateY: 0, rotateZ: 0 };
+
+    const animate = (timestamp: number) => {
+      if (!start) start = timestamp;
+      const elapsed = timestamp - start;
+      const t = Math.min(elapsed / duration, 1); // 0 ~ 1
+
+      // 선형 보간 (linear interpolation)
+      positionRef.current = {
+        perX: from.perX + (to.perX - from.perX) * t,
+        perZ: from.perZ + (to.perZ - from.perZ) * t,
+        rotateX: from.rotateX + (to.rotateX - from.rotateX) * t,
+        rotateY: from.rotateY + (to.rotateY - from.rotateY) * t,
+        rotateZ: from.rotateZ + (to.rotateZ - from.rotateZ) * t,
+      };
+
+      if (t < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
     };
-  }, []);
+
+    animationFrameId = requestAnimationFrame(animate);
+
+    // 클린업
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [mode]);
+
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
   useEffect(() => {
@@ -225,6 +256,8 @@ void main() {
         left: "0",
         display: "block",
         mixBlendMode: "difference",
+        pointerEvents: "none",
+        zIndex: "100",
       }}
     />
   );
