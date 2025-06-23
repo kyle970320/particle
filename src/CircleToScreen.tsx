@@ -19,7 +19,7 @@ const CircleScreen = ({
     const max = Math.max(appContext.size.w, appContext.size.h);
     return Math.floor(max * 2);
   }, [appContext.size]);
-  console.log(lastPos);
+
   //   console.log(mode, bg);
   const handleAnimationEnd = (e) => {
     if (e.target === subContainer.current) {
@@ -50,7 +50,7 @@ const CircleScreen = ({
             `
             }
             animation-name: focus-show;
-            animation-duration: 1s;
+            animation-duration: 0.6s;
             animation-timing-function: linear;
             animation-fill-mode: forwards;
           }

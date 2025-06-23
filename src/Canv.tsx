@@ -1,14 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { createNoise3D } from "simplex-noise";
 
 export default function SphereParticleCanvas({ mode }) {
-  const randomRGB = { r: Math.random(), g: Math.random(), b: Math.random() };
   const vertexShaderSource = `
 attribute vec3 a_position;
 uniform mat4 u_matrix;
 void main() {
     gl_Position = u_matrix * vec4(a_position * 1.0, 1.0);
-    gl_PointSize = 1.2;
+    gl_PointSize = 2.6;
     }
     `;
 
@@ -17,7 +16,7 @@ void main() {
     void main() {
         vec2 c = gl_PointCoord - vec2(0.5);  // 중심에서 거리 계산
         if (length(c) > 0.5) discard;        // 반지름 0.5 초과면 버림
-        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); // 흰색 원
+        gl_FragColor = vec4(0.25, 0.25, 0.25, 1.0); // 흰색 원
         }
         `;
   const positionRef = useRef({
@@ -27,30 +26,16 @@ void main() {
     rotateY: 0,
     rotateZ: 0,
   });
-  const onScroll = () => {
-    const totalScroll = document.body.scrollHeight;
-    const getRatio = (ratio: number) => {
-      const maxTotal = Math.min(totalScroll, 1200);
-      const maxValue = Math.min((window.scrollY / maxTotal) * ratio, ratio);
-      return maxValue;
-    };
-    positionRef.current = {
-      perX: getRatio(3),
-      perZ: getRatio(4),
-      rotateX: getRatio(0.8),
-      rotateY: getRatio(1),
-      rotateZ: getRatio(1.2),
-    };
-  };
+
   useEffect(() => {
     let start: number | null = null;
     let animationFrameId: number;
 
-    const duration = 400; // 1초
+    const duration = 600; // 1초
     const from = { ...positionRef.current };
     const to =
       mode > 0
-        ? { perX: 3, perZ: 4, rotateX: 0.8, rotateY: 1, rotateZ: 1.2 }
+        ? { perX: 3, perZ: 5, rotateX: 0.8, rotateY: 1, rotateZ: 1.2 }
         : { perX: 0, perZ: 0, rotateX: 0, rotateY: 0, rotateZ: 0 };
 
     const animate = (timestamp: number) => {
@@ -89,7 +74,14 @@ void main() {
       console.error("WebGL not supported");
       return;
     }
-
+    const resizeCanvas = () => {
+      const displayWidth = canvas.clientWidth;
+      const displayHeight = canvas.clientHeight;
+      if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+        canvas.width = displayWidth;
+        canvas.height = displayHeight;
+      }
+    };
     // 셰이더 컴파일 함수
     const compileShader = (type, source) => {
       const shader = gl.createShader(type);
@@ -200,9 +192,12 @@ void main() {
       }
       return out;
     };
-
+    const handleResize = () => {
+      resizeCanvas();
+    };
     const render = () => {
       time += 0.01;
+      resizeCanvas();
       let offset = 0;
       const strength = Math.sin(time * 1.5) * 0.2;
 
@@ -218,7 +213,7 @@ void main() {
         positions[offset++] = ny * deform;
         positions[offset++] = nz * deform;
       }
-
+      window.addEventListener("resize", handleResize);
       gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
       gl.bufferData(gl.ARRAY_BUFFER, positions, gl.DYNAMIC_DRAW);
       gl.viewport(0, 0, canvas.width, canvas.height);
@@ -241,7 +236,10 @@ void main() {
     };
 
     render();
-    return () => cancelAnimationFrame(animationRef.current);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(animationRef.current);
+    };
   }, []);
 
   return (

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import RotatingSphereBasic from "./Canv";
 import WebGLTextParticle from "./CanText";
@@ -9,20 +9,9 @@ import CircleScreen from "./CircleToScreen";
 
 function App() {
   const [count, setCount] = useState(-2);
-  const [color, setColor] = useState("black");
-  const [bg, setBg] = useState("white");
+  const [bg, setBg] = useState("black");
   const [isBlockClick, setIsBlockClick] = useState(false);
   const [lastPos, setLastPos] = useState({ x: 0, y: 0 });
-  const context = useContext(ClickPosContext);
-  useEffect(() => {
-    if (count === -2) {
-      setColor("white");
-    }
-    if (count === 2) {
-      setColor("black");
-    }
-  }, [count]);
-  console.log(count < 0 ? "black" : "white");
   return (
     <div
       style={{
@@ -50,7 +39,7 @@ function App() {
                 console.log(x, y);
                 setLastPos({ x, y: y - (window.scrollY || 0) });
                 if (count !== -2 && !isBlockClick) {
-                  setBg("black");
+                  setBg("white");
                   setCount(-1);
                   setIsBlockClick(true);
                 }
@@ -65,7 +54,7 @@ function App() {
                 console.log(x, y);
                 setLastPos({ x, y: currnetY });
                 if (count !== 2 && !isBlockClick) {
-                  setBg("black");
+                  setBg("white");
                   setCount(1);
                   setIsBlockClick(true);
                 }
